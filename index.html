@@ -702,15 +702,23 @@ async function saveEdit(col, id){
   if(!r) return;
 
   r.data = document.getElementById('f-data')?.value || r.data;
-  r.valor = parseFloat(document.getElementById('f-valor')?.value)||0;
+  if(col!=='trabalhos') r.valor = parseFloat(document.getElementById('f-valor')?.value)||0;
 
   if(col==='trabalhos'){
     r.cliente = document.getElementById('f-cliente')?.value || r.cliente;
     r.tipo = document.getElementById('f-tipo')?.value || r.tipo;
     r.obs = document.getElementById('f-obs')?.value || '';
-    r.p1 = parseFloat(document.getElementById('f-p1b')?.value)||0;
-    r.p2 = parseFloat(document.getElementById('f-p2')?.value)||0;
-    r.status = document.getElementById('f-status')?.value || r.status;
+    const editP1 = parseFloat(document.getElementById('f-p1b')?.value)||0;
+    const editP2 = parseFloat(document.getElementById('f-p2')?.value)||0;
+    if(editP2>0){
+      // Split: atualiza registro atual com 1ª parcela e cria 2º registro pendente
+      r.valor=editP1; r.p1=editP1; r.p2=0; r.status=editP1>0?'pago':'pendente';
+      const r2={id:uid(),data:r.data,cliente:r.cliente,tipo:r.tipo,obs:r.obs?(r.obs+' (2ª parcela)'):'2ª parcela',valor:editP2,p1:0,p2:0,status:'pendente'};
+      D.trabalhos.push(r2);
+    } else {
+      r.p1=editP1; r.p2=0; r.valor=parseFloat(document.getElementById('f-valor')?.value)||0;
+      r.status=document.getElementById('f-status')?.value||r.status;
+    }
   } else if(col==='entradas'){
     r.desc = document.getElementById('f-desc')?.value || r.desc;
     r.forma = document.getElementById('f-forma')?.value || r.forma;
