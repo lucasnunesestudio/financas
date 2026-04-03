@@ -487,7 +487,7 @@ async function loadFromSheets(){syncStatus('loading','Carregando do Google Sheet
 Object.keys(D).forEach(k=>{if(data[k]&&data[k].length>0)D[k]=data[k];});save();syncStatus('ok','Sincronizado com Google Sheets ✓');render();}catch(e){syncStatus('err','Usando dados locais');}}
 
 // ══ LOGIN ══════════════════════════════════════════════
-const AUTH_URL='http://galeria.lucasnunes.com.br/financas_auth.php';
+const AUTH_URL='http://galeria.lucasnunes.com.br/financas_auth';
 const SESSION_KEY='ln_session';
 const SESSION_DURATION=7*24*60*60*1000;
 function checkSession(){const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');if(s&&Date.now()-s.ts<SESSION_DURATION){document.getElementById('loginScreen').classList.remove('on');render();loadFromSheets();}}
