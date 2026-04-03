@@ -487,11 +487,11 @@ async function loadFromSheets(){syncStatus('loading','Carregando do Google Sheet
 Object.keys(D).forEach(k=>{if(data[k]&&data[k].length>0)D[k]=data[k];});save();syncStatus('ok','Sincronizado com Google Sheets ✓');render();}catch(e){syncStatus('err','Usando dados locais');}}
 
 // ══ LOGIN ══════════════════════════════════════════════
-const SENHA='123';
+const AUTH_URL='http://galeria.lucasnunes.com.br/financas_auth.php';
 const SESSION_KEY='ln_session';
 const SESSION_DURATION=7*24*60*60*1000;
 function checkSession(){const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');if(s&&Date.now()-s.ts<SESSION_DURATION){document.getElementById('loginScreen').classList.remove('on');render();loadFromSheets();}}
-function checkLogin(){const v=document.getElementById('loginInput').value;if(v===SENHA){localStorage.setItem(SESSION_KEY,JSON.stringify({ts:Date.now()}));document.getElementById('loginScreen').classList.remove('on');render();loadFromSheets();}else{document.getElementById('loginErr').classList.add('on');document.getElementById('loginInput').value='';setTimeout(()=>document.getElementById('loginErr').classList.remove('on'),2500);}}
+async function checkLogin(){const v=document.getElementById('loginInput').value;const btn=document.querySelector('.login-btn');btn.disabled=true;btn.textContent='Verificando...';try{const r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({senha:v})});const data=await r.json();if(data.ok){localStorage.setItem(SESSION_KEY,JSON.stringify({ts:Date.now()}));document.getElementById('loginScreen').classList.remove('on');render();loadFromSheets();}else{document.getElementById('loginErr').classList.add('on');document.getElementById('loginInput').value='';setTimeout(()=>document.getElementById('loginErr').classList.remove('on'),2500);}}catch(e){document.getElementById('loginErr').textContent='Erro de conexão. Tente novamente.';document.getElementById('loginErr').classList.add('on');setTimeout(()=>{document.getElementById('loginErr').classList.remove('on');document.getElementById('loginErr').textContent='Senha incorreta. Tente novamente.';},2500);}finally{btn.disabled=false;btn.textContent='Entrar';}}
 function logout(){localStorage.removeItem(SESSION_KEY);document.getElementById('loginScreen').classList.add('on');document.getElementById('loginInput').value='';}
 
 // ══ NAV ══════════════════════════════════════════════
